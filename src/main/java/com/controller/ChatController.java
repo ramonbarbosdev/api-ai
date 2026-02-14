@@ -1,6 +1,7 @@
 package com.controller;
 
 
+import com.model.ChatResult;
 import com.service.ChatHistoryService;
 import com.service.ConversationService;
 import com.service.MemoryChatService;
@@ -35,11 +36,11 @@ public class ChatController {
     }
 
     @PostMapping
-    public Map<String, String> generation(@RequestBody ChatMessage message)
+    public  ChatResult generation(@RequestBody ChatMessage message)
     {
-        String reply = memoryChatService.generation(message.conversationId(),message.message());
+        ChatResult result = memoryChatService.generation(message.conversationId(),message.message());
 
-        return Map.of("reply", reply);
+        return result;
     }
 
     @GetMapping("/history/{conversationId}")
