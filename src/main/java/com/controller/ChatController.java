@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 public class ChatController {
 
     private final ChatClient chatClient;
-
+    //ola mundo
     public ChatController(@NotNull ChatClient.Builder chatClientBuilder)
     {
         this.chatClient = chatClientBuilder.build();
