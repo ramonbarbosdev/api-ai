@@ -1,30 +1,34 @@
 package com.controller;
 
 
-import org.jspecify.annotations.Nullable;
+import com.model.ChatMessage;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/chat")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ChatController {
 
     private final ChatClient chatClient;
-    //ola mundo
+
     public ChatController(@NotNull ChatClient.Builder chatClientBuilder)
     {
         this.chatClient = chatClientBuilder.build();
     }
 
-    @GetMapping("/ai")
-    String generation(String userInput)
+    @PostMapping
+    public Map<String, String> generation(@RequestBody ChatMessage message)
     {
-        return  this.chatClient.prompt()
-                .user(userInput)
+        String reply = this.chatClient.prompt()
+                .user(message.message())
                 .call()
                 .content();
+
+        return Map.of("reply", reply);
     }
+
 }
