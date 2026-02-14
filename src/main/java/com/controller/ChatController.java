@@ -1,13 +1,15 @@
 package com.controller;
 
 
-import com.MemoryChatService;
+import com.service.ChatHistoryService;
+import com.service.MemoryChatService;
 import com.model.ChatMessage;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,6 +22,9 @@ public class ChatController {
     @Autowired(required = true)
     private MemoryChatService memoryChatService;
 
+    @Autowired
+    private ChatHistoryService chatHistoryService;
+
     public ChatController(@NotNull ChatClient.Builder chatClientBuilder)
     {
         this.chatClient = chatClientBuilder.build();
@@ -28,9 +33,26 @@ public class ChatController {
     @PostMapping
     public Map<String, String> generation(@RequestBody ChatMessage message)
     {
-        String reply = memoryChatService.generation(message.message());
+        String reply = memoryChatService.generation(message.conversationId(),message.message());
 
         return Map.of("reply", reply);
     }
+
+    @GetMapping("/history/{conversationId}")
+    public List<Map<String, String>> history(
+            @PathVariable String conversationId
+    ) {
+
+        return chatHistoryService
+                .getHistory(conversationId)
+                .stream()
+                .map(msg -> Map.of(
+                        "role", msg.getMessageType().name(),
+                        "content", msg.getText()
+                ))
+                .toList();
+
+    }
+
 
 }

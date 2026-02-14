@@ -1,5 +1,5 @@
 package com.model;
 
-public record ChatMessage(String message) {
+public record ChatMessage(String message, String conversationId) {
 
 }
