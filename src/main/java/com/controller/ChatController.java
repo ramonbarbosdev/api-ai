@@ -2,6 +2,7 @@ package com.controller;
 
 
 import com.service.ChatHistoryService;
+import com.service.ConversationService;
 import com.service.MemoryChatService;
 import com.model.ChatMessage;
 import org.springframework.ai.chat.client.ChatClient;
@@ -25,6 +26,9 @@ public class ChatController {
     @Autowired
     private ChatHistoryService chatHistoryService;
 
+    @Autowired
+    private ConversationService conversationService;
+
     public ChatController(@NotNull ChatClient.Builder chatClientBuilder)
     {
         this.chatClient = chatClientBuilder.build();
@@ -47,11 +51,16 @@ public class ChatController {
                 .getHistory(conversationId)
                 .stream()
                 .map(msg -> Map.of(
-                        "role", msg.getMessageType().name(),
+                        "type", msg.getMessageType().name(),
                         "content", msg.getText()
                 ))
                 .toList();
 
+    }
+
+    @GetMapping("/conversations")
+    public List<String> conversations() {
+        return conversationService.listConversationIds();
     }
 
 

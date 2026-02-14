@@ -14,6 +14,7 @@ public class MemoryChatService {
     public MemoryChatService(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.builder = builder;
         this.chatMemory = chatMemory;
+
     }
 
     public String generation(String conversationId, String message) {
