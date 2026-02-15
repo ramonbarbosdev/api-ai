@@ -20,7 +20,8 @@ public class CorsConfig {
                         .allowedOrigins(
                                 "http://localhost:4200",
                                 "http://152.228.128.18:4202",
-                                "http://152.228.128.18"
+                                "http://152.228.128.18",
+                                "https://memorixai.ramoncode.com.br"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
