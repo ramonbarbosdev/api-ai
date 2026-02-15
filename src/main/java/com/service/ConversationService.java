@@ -6,7 +6,9 @@ import com.repository.SpringAiChatMemoryRepository;
 import com.dto.ConversationDTO;
 import com.model.SpringAiChatMemory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public class ConversationService {
     @Autowired
     private ChatHistoryService chatHistoryService;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public List<String> listConversationIds() {
 
@@ -46,21 +50,6 @@ public class ConversationService {
                 .toList();
 
     }
-
-//    public List<ConversationDTO> listConversations() {
-//
-//        return repository.findAll()
-//                .stream()
-//                .map(SpringAiChatMemory::getConversationId)
-//                .distinct()
-//                .map(id -> new ConversationDTO(
-//                        id,
-//                        generateTitleFromHistory(id)
-//                ))
-//                .toList();
-//
-//    }
-
 
     private String generateTitleFromHistory(String id) {
 
@@ -119,5 +108,20 @@ public class ConversationService {
 
     }
 
+    @Transactional
+    public void deleteConversation(String id) {
+
+        if (!conversationRepository.existsById(id)) {
+            throw new RuntimeException("Conversation não existe");
+        }
+
+        jdbcTemplate.update(
+                "DELETE FROM spring_ai_chat_memory WHERE conversation_id = ?",
+                id
+        );
+
+        conversationRepository.deleteById(id);
+
+    }
 
 }

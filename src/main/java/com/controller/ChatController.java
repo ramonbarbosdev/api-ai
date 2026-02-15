@@ -10,6 +10,8 @@ import com.service.MemoryChatService;
 import com.model.ChatMessage;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -29,8 +31,7 @@ public class ChatController {
     @Autowired
     private ConversationService conversationService;
 
-    public ChatController(@NotNull ChatClient.Builder chatClientBuilder)
-    {
+    public ChatController(@NotNull ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
     }
 
@@ -60,11 +61,6 @@ public class ChatController {
 
     }
 
-
-    // -------------------------------------------------------
-    // GET CONVERSATION HISTORY
-    // -------------------------------------------------------
-
     @GetMapping("/history/{conversationId}")
     public List<Map<String, String>> history(
             @PathVariable String conversationId
@@ -80,5 +76,13 @@ public class ChatController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteConversation(@PathVariable String id) {
+
+        conversationService.deleteConversation(id);
+
+        return new ResponseEntity<>(Map.of("message", "Registro deletado."), HttpStatus.CREATED);
+
+    }
 
 }
