@@ -59,4 +59,6 @@ jobs:
             --memory=512m \
             -p ${{ env.HOST_PORT }}:${{ env.CONTAINER_PORT }} \
             --env-file /home/app/api-ai.env \
+            -v /home/app/gcp-credentials.json:/app/gcp-credentials.json \
+            -e GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-credentials.json \
             ghcr.io/${{ github.repository }}:latest
