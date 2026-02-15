@@ -1,6 +1,7 @@
 package com.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,7 +15,7 @@ public class SpringAiChatMemory {
     @Column(name = "conversation_id")
     private String conversationId;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "type")

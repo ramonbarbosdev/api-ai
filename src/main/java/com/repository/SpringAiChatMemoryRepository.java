@@ -1,4 +1,4 @@
-package com;
+package com.repository;
 
 import com.model.SpringAiChatMemory;
 import org.springframework.data.jpa.repository.JpaRepository;

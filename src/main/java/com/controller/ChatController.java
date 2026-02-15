@@ -1,7 +1,9 @@
 package com.controller;
 
 
+import com.dto.ConversationDTO;
 import com.model.ChatResult;
+import com.model.RenameConversationRequest;
 import com.service.ChatHistoryService;
 import com.service.ConversationService;
 import com.service.MemoryChatService;
@@ -24,8 +26,6 @@ public class ChatController {
     @Autowired(required = true)
     private MemoryChatService memoryChatService;
 
-    @Autowired
-    private ChatHistoryService chatHistoryService;
 
     @Autowired
     private ConversationService conversationService;
@@ -35,33 +35,50 @@ public class ChatController {
         this.chatClient = chatClientBuilder.build();
     }
 
-    @PostMapping
-    public  ChatResult generation(@RequestBody ChatMessage message)
-    {
-        ChatResult result = memoryChatService.generation(message.conversationId(),message.message());
 
-        return result;
+    @PostMapping("/send")
+    public ChatResult sendMessage(@RequestBody ChatMessage message) {
+
+        conversationService.ensureExists(
+                message.conversationId()
+        );
+
+        return memoryChatService.generation(
+                message.conversationId(),
+                message.message()
+        );
     }
+
+    @PostMapping("/rename")
+    public void renameConversation(
+            @RequestBody RenameConversationRequest req
+    ) {
+
+        conversationService.renameConversation(
+                req.conversationId(),
+                req.title()
+        );
+
+    }
+
+
+    // -------------------------------------------------------
+    // GET CONVERSATION HISTORY
+    // -------------------------------------------------------
 
     @GetMapping("/history/{conversationId}")
     public List<Map<String, String>> history(
             @PathVariable String conversationId
     ) {
-
-        return chatHistoryService
-                .getHistory(conversationId)
-                .stream()
-                .map(msg -> Map.of(
-                        "type", msg.getMessageType().name(),
-                        "content", msg.getText()
-                ))
-                .toList();
-
+        return conversationService.listHistory(conversationId);
     }
 
+
     @GetMapping("/conversations")
-    public List<String> conversations() {
-        return conversationService.listConversationIds();
+    public List<ConversationDTO> conversations() {
+
+        return conversationService.listConversations();
+
     }
 
 

@@ -1,5 +1,6 @@
 package com.service;
 
+import com.exception.ConversationLimitException;
 import com.model.ChatResult;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -21,27 +22,33 @@ public class MemoryChatService {
 
     public ChatResult generation(String conversationId, String message) {
 
-        ChatClient chatClient = builder
-                .defaultAdvisors(
-                        MessageChatMemoryAdvisor
-                                .builder(chatMemory)
+        // verificar histórico
+        var history = chatMemory.get(conversationId);
+
+        boolean alreadyHasUserMessage = history.stream()
+                .anyMatch(m -> m.getMessageType().name().equals("USER"));
+
+        if (alreadyHasUserMessage) {
+
+            throw new ConversationLimitException();
+
+        }
+
+        ChatClient chatClient = builder.build();
+
+        ChatResponse response = chatClient.prompt()
+                .advisors(
+                        MessageChatMemoryAdvisor.builder(chatMemory)
                                 .conversationId(conversationId)
                                 .build()
                 )
-
-                .build();
-
-        ChatResponse response = chatClient.prompt()
                 .user(message)
                 .call()
                 .chatResponse();
 
         Usage usage = response.getMetadata().getUsage();
 
-        String content = response
-                .getResult()
-                .getOutput()
-                .getText();
+        String content = response.getResult().getOutput().getText();
 
         return new ChatResult(
                 content,
@@ -50,5 +57,4 @@ public class MemoryChatService {
                 usage.getTotalTokens()
         );
     }
-
 }
