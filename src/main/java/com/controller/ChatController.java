@@ -18,11 +18,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/chat")
-@CrossOrigin(origins = {
-        "http://localhost:4200",
-        "https://memorixai.ramoncode.com.br",
-})
-
 public class ChatController {
 
     private final ChatClient chatClient;
